@@ -112,14 +112,14 @@ def reachPoint(destination_x, destination_y, destination_angle):
 	transformed_theta = math.atan2(cumulative_transform[1, 0], cumulative_transform[0, 0])
 
 	# Compute error from the current position to the transformed destination
-	xythetaArray = transformcoordinates(current_x, current_y, twist_angle,transformed_x, transformed_y,transformed_theta)
+	xythetaArray = transformcoordinates(transformed_x, transformed_y,transformed_theta)
 
 	errorArray = cartesian2polar(xythetaArray[0], xythetaArray[1], xythetaArray[2])
 	vw = compute_vw(errorArray[0], errorArray[1], errorArray[2], .15, 0.2, -0.3)
 	velocity_publisher(vw[0], vw[1]) 
 
 	while abs(errorArray[0])> .01 :
-		xythetaArray = transformcoordinates(current_x,current_y,twist_angle,transformed_x,transformed_y,transformed_theta)
+		xythetaArray = transformcoordinates(transformed_x,transformed_y,transformed_theta)
 		errorArray = cartesian2polar(xythetaArray[0], xythetaArray[1] , xythetaArray[2])
 		vw = compute_vw(errorArray[0],errorArray[1],errorArray[2],.15,0.2,-.3)
 		velocity_publisher( vw[0],vw[1] )
@@ -130,7 +130,7 @@ def reachPoint(destination_x, destination_y, destination_angle):
 
 
 	while abs(xythetaArray[2]) > np.radians(5): 
-		xythetaArray = transformcoordinates(current_x,current_y,twist_angle, transformed_x,transformed_y,transformed_theta)
+		xythetaArray = transformcoordinates(transformed_x,transformed_y,transformed_theta)
 		velocity_publisher(0,.5)
 		#rospy.loginfo(" theta = %f " , xythetaArray[2])
 		rate.sleep()		
