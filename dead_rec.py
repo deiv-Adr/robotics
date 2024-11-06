@@ -30,19 +30,21 @@ def cartesian2polar(x,y,theta):
 
 	beta = -(theta+alpha) 
 
-	rospy.loginfo("\n rho = %f alpha = %f beta= %f\n", rho, alpha , beta);
+	#rospy.loginfo("\n rho = %f alpha = %f beta= %f\n", rho, alpha , beta);
 	#rospy.loginfo("\n*x = %fy= %f theta= %f\n", current_x, current_y, twist_angle);
 
 	a = [rho , alpha , beta ] 
 	return a 
 
-def transformcoordinates(dx,dy,dtheta, destination_x, destination_y, destination_theta):
+def transformcoordinates(destination_x, destination_y, destination_theta):
+	global current_x, current_y, twist_angle, start_x,start_y,start_angle
+	dx=current_x-start_x
+	dy=current_y-start_y
+	dtheta=twist_angle-start_angle
 	RitoR0 = np.array([[math.cos(dtheta),-math.sin(dtheta), 0, dx],
 					   [math.sin(dtheta), math.cos(dtheta), 0, dy],
 					   [0, 0, 1, 0],
 					   [0, 0, 0, 1]])
-
-
 	ItoR0 = np.array([[math.cos(destination_theta),-math.sin(destination_theta), 0, destination_x],
 						[math.sin(destination_theta), math.cos(destination_theta), 0, destination_y],
 						[0, 0, 1, 0],
@@ -54,7 +56,7 @@ def transformcoordinates(dx,dy,dtheta, destination_x, destination_y, destination
 	delta_y = RitoI[1][3]
 	theta = math.atan2(RitoI[1][0],RitoI[0][0])
 	a = [delta_x, delta_y, theta]
-	rospy.loginfo("\ntransform** error-> x  = %f y  = %f theta= %f\n", delta_x, delta_y ,math.degrees( theta));
+	#rospy.loginfo("\ntransform** error-> x  = %f y  = %f theta= %f\n", delta_x, delta_y ,math.degrees( theta));
 
 	return a
 
@@ -83,12 +85,16 @@ def velocity_publisher(v , w):
     
 
 def reachPoint(destination_x, destination_y, destination_angle):
-	global current_x, current_y, twist_angle
+	rospy.sleep(1)
+	global current_x, current_y, twist_angle, start_x,start_y,start_angle
+	start_x=current_x
+	start_y=current_y
+	start_angle=twist_angle
 	global cumulative_transform
 	# cumulative_transform is the transformation for the new destination with respect to the last current
 	destination_theta = np.radians(destination_angle)
-	cumuative_transfom=np.array([[math.cos(twist_angle),-math.sin(twist_angle), 0, current_x],
-					   [math.sin(twist_angle), math.cos(twist_angle), 0, current_y],
+	cumuative_transfom=np.array([[math.cos(start_angle),-math.sin(start_angle), 0, start_x],
+					   [math.sin(start_angle), math.cos(start_angle), 0, start_y],
 					   [0, 0, 1, 0],
 					   [0, 0, 0, 1]])
 	destination_transform = np.array([
@@ -126,7 +132,7 @@ def reachPoint(destination_x, destination_y, destination_angle):
 	while abs(xythetaArray[2]) > np.radians(5): 
 		xythetaArray = transformcoordinates(current_x,current_y,twist_angle, transformed_x,transformed_y,transformed_theta)
 		velocity_publisher(0,.5)
-		rospy.loginfo(" theta = %f " , xythetaArray[2])
+		#rospy.loginfo(" theta = %f " , xythetaArray[2])
 		rate.sleep()		
 
 		
