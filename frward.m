@@ -38,4 +38,4 @@ roll = rad2deg(roll);
 pitch = rad2deg(pitch);
 % Display the final transformation matrix (numeric)
 disp('Total Transformation Matrix between the base and the end-effector (numeric):');
-disp('O=',yaw,'A=',roll,'T=',pitch,'X'=T(1,4),'Y'=T(2,4),'Z'=T(3,4),);
+disp('O=',yaw,'A=',roll,'T=',pitch,'X'=T(1,4),'Y'=T(2,4),'Z'=T(3,4));
