@@ -23,7 +23,19 @@ for i = 1:6
     % Multiply the transformation matrix to the total matrix
     T = T * A;
 end
+% Yaw (ψ) around the z-axis
+yaw = atan2(T(2,1), T(1,1));
 
+% Roll (φ) around the x-axis
+roll = atan2(T(3,2), T(3,3));
+
+% Pitch (θ) around the y-axis
+pitch = atan2(-T(3,1), sqrt(T(3,2)^2 + T(3,3)^2));
+
+% Convert radians to degrees (optional, if you want the angles in degrees)
+yaw = rad2deg(yaw);
+roll = rad2deg(roll);
+pitch = rad2deg(pitch);
 % Display the final transformation matrix (numeric)
 disp('Total Transformation Matrix between the base and the end-effector (numeric):');
-disp(T);
+disp('O=',yaw,'A=',roll,'T=',pitch,'X'=T(1,4),'Y'=T(2,4),'Z'=T(3,4),);
